@@ -306,6 +306,8 @@ impl Pipeline {
                     idx = idx.wrapping_add(1);
                     accumulated_samples = rest.to_vec();
                 }
+
+                println!("debug {:?}", samples.len());
             }
 
             if !accumulated_samples.is_empty() {
