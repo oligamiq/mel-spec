@@ -287,6 +287,7 @@ impl Pipeline {
                 if let Err(e) = samples_tx.send((idx, chan)) {
                     eprintln!("Failed to send message to fft: {:?}", e);
                 }
+                println!("##2 debug {:?}", samples.len());
             }
 
             drop(samples_tx);
@@ -307,7 +308,7 @@ impl Pipeline {
                     accumulated_samples = rest.to_vec();
                 }
 
-                println!("debug {:?}", samples.len());
+                println!("##1 debug {:?}", samples.len());
             }
 
             if !accumulated_samples.is_empty() {
