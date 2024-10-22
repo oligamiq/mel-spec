@@ -34,6 +34,9 @@ pub fn mel_spectrogram(stft: &Array1<Complex<f64>>, mel_filters: &Array2<f64>) -
             .chain(Array1::from_elem(1, 0.0).into_iter()),
     );
 
+    // squaring
+    let stft = stft.mapv(|x| x * x);
+
     let mel_spec = mel_filters.dot(&stft);
 
     mel_spec
