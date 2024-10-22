@@ -22,7 +22,7 @@ impl MelSpectrogram {
 /// The normalised `Array2` output must be processed with [`interleave_frames`]
 /// before sending to whisper.cpp
 pub fn mel_spectrogram(stft: &Array1<Complex<f64>>, mel_filters: &Array2<f64>) -> Array1<f64> {
-    let stft = stft.iter().map(|x| x.norm()).collect::<Array1<f64>>();
+    let stft = stft.iter().map(|x| x.norm_sqr()).collect::<Array1<f64>>();
 
     // to half len
     let stft = stft.slice(s![..stft.len() / 2]);
@@ -33,9 +33,6 @@ pub fn mel_spectrogram(stft: &Array1<Complex<f64>>, mel_filters: &Array2<f64>) -
             .cloned()
             .chain(Array1::from_elem(1, 0.0).into_iter()),
     );
-
-    // squaring
-    let stft = stft.mapv(|x| x * x);
 
     let mel_spec = mel_filters.dot(&stft);
 
