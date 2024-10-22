@@ -12,14 +12,8 @@ impl MelSpectrogram {
         Self { filters }
     }
 
-    pub fn add_and_norm(&mut self, fft: &Array1<Complex<f64>>) -> Array2<f64> {
-        let mel = log_mel_spectrogram(&fft, &self.filters);
-        let norm = norm_mel(&mel);
-        norm
-    }
-
-    pub fn add(&mut self, fft: &Array1<Complex<f64>>) -> Array2<f64> {
-        let mel = log_mel_spectrogram(&fft, &self.filters);
+    pub fn add(&mut self, fft: &Array1<Complex<f64>>) -> Array1<f64> {
+        let mel = mel_spectrogram(&fft, &self.filters);
         mel
     }
 }
@@ -27,22 +21,10 @@ impl MelSpectrogram {
 /// Normalisation is a separate step, see [`norm_mel`].
 /// The normalised `Array2` output must be processed with [`interleave_frames`]
 /// before sending to whisper.cpp
-pub fn log_mel_spectrogram(stft: &Array1<Complex<f64>>, mel_filters: &Array2<f64>) -> Array2<f64> {
-    let mut magnitudes_padded = stft
-        .iter()
-        .map(|v| v.norm_sqr())
-        .take(stft.len() / 2)
-        .collect::<Vec<_>>();
+pub fn mel_spectrogram(stft: &Array1<Complex<f64>>, mel_filters: &Array2<f64>) -> Array1<f64> {
+    let stft = stft.iter().map(|x| x.norm()).collect::<Array1<f64>>();
 
-    magnitudes_padded.push(0.0);
-
-    let magnitudes_reshaped =
-        Array2::from_shape_vec((1, magnitudes_padded.len()), magnitudes_padded).unwrap();
-
-    let epsilon = 1e-10;
-    let mel_spec = mel_filters
-        .dot(&magnitudes_reshaped.t())
-        .mapv(|sum| (sum.max(epsilon)).log10());
+    let mel_spec = mel_filters.dot(&stft);
 
     mel_spec
 }
