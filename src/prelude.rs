@@ -4,5 +4,4 @@ pub use crate::mel::MelSpectrogram;
 pub use crate::quant::load_tga_8bit;
 pub use crate::quant::save_tga_8bit;
 pub use crate::quant::tga_8bit;
-pub use crate::rb::RingBuffer;
 pub use crate::stft::Spectrogram;
