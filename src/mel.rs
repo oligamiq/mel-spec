@@ -24,6 +24,16 @@ impl MelSpectrogram {
 pub fn mel_spectrogram(stft: &Array1<Complex<f64>>, mel_filters: &Array2<f64>) -> Array1<f64> {
     let stft = stft.iter().map(|x| x.norm()).collect::<Array1<f64>>();
 
+    // to half len
+    let stft = stft.slice(s![..stft.len() / 2]);
+
+    // push zero padding 1 frame
+    let stft = Array1::from_iter(
+        stft.iter()
+            .cloned()
+            .chain(Array1::from_elem(1, 0.0).into_iter()),
+    );
+
     let mel_spec = mel_filters.dot(&stft);
 
     mel_spec
