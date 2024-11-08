@@ -344,6 +344,6 @@ mod tests {
         // Add the FFT data to the MelSpectrogram
         let mel_spec = stage.add(&fft_input);
         // Ensure that the output Mel spectrogram has the correct shape
-        assert_eq!(mel_spec.shape(), &[n_mels, 1]);
+        assert_eq!(mel_spec.shape(), &[n_mels]);
     }
 }

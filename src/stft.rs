@@ -1,5 +1,5 @@
 use ndarray::Array1;
-use num::Complex;
+use num::{Complex, Float};
 use rustfft::{Fft, FftPlanner};
 use std::f64::consts::PI;
 use std::sync::Arc;
@@ -45,11 +45,11 @@ impl Spectrogram {
 
     /// Takes a single channel of audio (non-interleaved, mono, f32).
     /// Returns an FFT frame using overlap-and-save and the configured `hop_size`
-    pub fn add(&mut self, frames: &[f32]) -> Option<Array1<Complex<f64>>> {
+    pub fn add<T: Float>(&mut self, frames: &[T]) -> Option<Array1<Complex<f64>>> {
         let fft_size = self.fft_size;
         let hop_size = self.hop_size;
 
-        let mut pcm_data: Vec<f64> = frames.iter().map(|x| *x as f64).collect();
+        let mut pcm_data: Vec<f64> = frames.iter().map(|x| x.to_f64().unwrap()).collect();
         let pcm_size = pcm_data.len();
         assert!(pcm_size <= hop_size, "frames must be <= hop_size");
 
